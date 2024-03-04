@@ -119,5 +119,6 @@ func deploy(cmd *cobra.Command, args []string) {
 		fmt.Printf("Sending POST to %s\n", url)
 		_, err = common.PostRequest(url, username, token, params)
 		cobra.CheckErr(err)
+		fmt.Printf("Check deployment status at %s/%s\n", jenkinsUrl, deployJob)
 	}
 }
