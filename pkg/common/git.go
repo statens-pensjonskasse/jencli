@@ -52,6 +52,5 @@ func GetCurrentBranch(dir string) (string, error) {
 		return "", err
 	}
 
-	slice := strings.Split(string(file), "/")
-	return slice[len(slice)-1], nil
+	return strings.TrimPrefix(string(file), "ref: refs/heads/"), nil
 }
