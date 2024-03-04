@@ -52,5 +52,5 @@ func GetCurrentBranch(dir string) (string, error) {
 		return "", err
 	}
 
-	return strings.TrimPrefix(string(file), "ref: refs/heads/"), nil
+	return strings.TrimSpace(strings.TrimPrefix(string(file), "ref: refs/heads/")), nil
 }

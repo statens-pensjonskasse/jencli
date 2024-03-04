@@ -76,10 +76,10 @@ func deploy(cmd *cobra.Command, args []string) {
 		branch, err = common.GetCurrentBranch(cwd)
 		cobra.CheckErr(err)
 	}
-	branch = common.NormaliseBranchName(branch)
+	normalisedBranch := common.NormaliseBranchName(branch)
 
 	if useBranchTag {
-		tag = fmt.Sprintf("latest_%s", branch)
+		tag = fmt.Sprintf("latest_%s", normalisedBranch)
 	}
 
 	if len(stack) < 1 {
@@ -89,20 +89,20 @@ func deploy(cmd *cobra.Command, args []string) {
 	fullImage := "old-dockerhub.spk.no:5000/"
 	fullImage += image
 	if useBranchPostfix {
-		fullImage += fmt.Sprintf("/%s", branch)
+		fullImage += fmt.Sprintf("/%s", normalisedBranch)
 	}
 	fullImage += fmt.Sprintf(":%s", tag)
 
-	fmt.Printf("Swarm:         %s\n", swarm)
-	fmt.Printf("Image name:    %s\n", image)
-	fmt.Printf("Branch:        %s\n", branch)
-	fmt.Printf("Branch postfix %s\n", strconv.FormatBool(useBranchPostfix))
-	fmt.Printf("Tag:           %s\n", tag)
-	fmt.Printf("Branch tag     %s\n", strconv.FormatBool(useBranchTag))
-	fmt.Printf("Full image:    %s\n", fullImage)
-	fmt.Printf("Env:           %s\n", env)
-	fmt.Printf("Stack:         %s\n", stack)
-	fmt.Printf("Slack:         %s\n", slack)
+	fmt.Printf("Swarm:          %s\n", swarm)
+	fmt.Printf("Image name:     %s\n", image)
+	fmt.Printf("Branch:         %s\n", branch)
+	fmt.Printf("Branch postfix: %s\n", strconv.FormatBool(useBranchPostfix))
+	fmt.Printf("Tag:            %s\n", tag)
+	fmt.Printf("Branch tag:     %s\n", strconv.FormatBool(useBranchTag))
+	fmt.Printf("Full image:     %s\n", fullImage)
+	fmt.Printf("Env:            %s\n", env)
+	fmt.Printf("Stack:          %s\n", stack)
+	fmt.Printf("Slack:          %s\n", slack)
 
 	if !dryRun {
 		url := fmt.Sprintf("%s/%s/buildWithParameters", jenkinsUrl, deployJob)
