@@ -18,7 +18,7 @@ jencli config set \
   --user <brukernavn> \
   --token <APIToken> \
   --slack <@slackbrukernavn> \
-  --jpl-deploy-job job/INC/job/jpl-deploy/job/main
+  --jpl-deploy-job job/DEV/job/JPL-Deploy/main
 ```
 
 Dette lager en `config.yaml`-fil under `$HOME/.config/jencli/` men konfigurasjonen.
