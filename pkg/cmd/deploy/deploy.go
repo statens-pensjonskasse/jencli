@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"jencli/pkg/common"
 	"os"
+	"path/filepath"
 	"strconv"
 )
 
@@ -66,9 +67,9 @@ func deploy(cmd *cobra.Command, args []string) {
 	}
 
 	if len(image) < 1 {
-		cwd, _ := os.Getwd()
-		image, err = common.GetRepoName(cwd)
+		cwd, err := os.Getwd()
 		cobra.CheckErr(err)
+		image = filepath.Base(cwd)
 	}
 
 	if len(branch) < 1 {
