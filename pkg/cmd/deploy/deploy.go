@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"jencli/pkg/api/jenkins/types"
 	"jencli/pkg/common"
+	"jencli/pkg/printer"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 var Cmd = &cobra.Command{
@@ -94,32 +95,38 @@ func deploy(cmd *cobra.Command, args []string) {
 	}
 	fullImage += fmt.Sprintf(":%s", tag)
 
-	fmt.Printf("Swarm:          %s\n", swarm)
-	fmt.Printf("Image name:     %s\n", image)
-	fmt.Printf("Branch:         %s\n", branch)
-	fmt.Printf("Branch postfix: %s\n", strconv.FormatBool(useBranchPostfix))
-	fmt.Printf("Tag:            %s\n", tag)
-	fmt.Printf("Branch tag:     %s\n", strconv.FormatBool(useBranchTag))
-	fmt.Printf("Full image:     %s\n", fullImage)
-	fmt.Printf("Env:            %s\n", env)
-	fmt.Printf("Stack:          %s\n", stack)
-	fmt.Printf("Slack:          %s\n", slack)
+	params := types.JPLDeploy{
+		Swarm:            swarm,
+		Image:            image,
+		Branch:           branch,
+		UseBranchPostfix: useBranchPostfix,
+		Tag:              tag,
+		UseBranchTag:     useBranchTag,
+		FullImageName:    fullImage,
+		Environment:      env,
+		StackConfig:      stack,
+		Slack:            slack,
+	}
+
+	cobra.CheckErr(printer.PrintYaml(params))
 
 	if !dryRun {
 		url := fmt.Sprintf("%s/%s/buildWithParameters", jenkinsUrl, deployJob)
-		params := map[string]string{
-			"swarm":         swarm,
-			"image":         image,
-			"branchPostfix": strconv.FormatBool(useBranchPostfix),
-			"branch":        branch,
-			"tag":           tag,
-			"environment":   env,
-			"stackConfig":   stack,
-			"slack":         slack,
-		}
 		fmt.Printf("Sending POST to %s\n", url)
-		_, err = common.PostRequest(url, username, token, params)
+		resp, err := common.PostRequest(url, username, token, params.ToParamMap())
 		cobra.CheckErr(err)
-		fmt.Printf("Check deployment status at %s/%s\n", jenkinsUrl, deployJob)
+		fmt.Printf("Reply: %s\n", resp.Status)
+		switch resp.StatusCode {
+		case 201:
+			fmt.Printf("Check deployment status at %s/%s\n", jenkinsUrl, deployJob)
+		case 401:
+			fallthrough
+		case 403:
+			fmt.Println("Is the API token valid?")
+		case 404:
+			fmt.Println("Is the job URL correct?")
+		default:
+			fmt.Println("Unexpected reply from Jenkins")
+		}
 	}
 }

@@ -1,5 +1,6 @@
 .idea
 bin/
+.cache
 
 *.yaml
 !/testdata/**/*.yaml
