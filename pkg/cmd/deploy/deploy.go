@@ -23,6 +23,7 @@ var Cmd = &cobra.Command{
 		viper.BindPFlag(common.EnvFlag, cmd.Flags().Lookup(common.EnvFlag))
 		viper.BindPFlag(common.StackFlag, cmd.Flags().Lookup(common.StackFlag))
 		viper.BindPFlag(common.DryRunFlag, cmd.Flags().Lookup(common.DryRunFlag))
+		viper.BindPFlag(common.UseHarborFlag, cmd.Flags().Lookup(common.UseHarborFlag))
 	},
 	Use:   "deploy",
 	Short: "Deploy an application using JPL manual deploy job",
@@ -38,6 +39,7 @@ func init() {
 	Cmd.Flags().String(common.SwarmFlag, "", "Which swarm to use ['utv', 'team', 'test']")
 	Cmd.Flags().String(common.EnvFlag, "", "Which environment to use, e.g. 'utv', 'tmmmed1'")
 	Cmd.Flags().String(common.StackFlag, "", "Which stack config to use. Defaults to environment.")
+	Cmd.Flags().Bool(common.UseHarborFlag, false, "Use Harbor instead of Old Dockerhub")
 
 	Cmd.Flags().Bool(common.DryRunFlag, false, "Only render output")
 }
@@ -57,6 +59,7 @@ func deploy(cmd *cobra.Command, args []string) {
 	env := viper.GetString(common.EnvFlag)
 	stack := viper.GetString(common.StackFlag)
 	dryRun := viper.GetBool(common.DryRunFlag)
+	useHarbor := viper.GetBool(common.UseHarborFlag)
 
 	var err error
 
@@ -88,7 +91,16 @@ func deploy(cmd *cobra.Command, args []string) {
 		stack = env
 	}
 
-	fullImage := "old-dockerhub.spk.no:5000/"
+	fullImage := ""
+	if useHarbor {
+		cwd, _ := os.Getwd()
+		project, err := common.GetProject(cwd)
+		cobra.CheckErr(err)
+		fullImage += "cr.spk.no/" + project + "/"
+
+	} else {
+		fullImage += "old-dockerhub.spk.no:5000/"
+	}
 	fullImage += image
 	if useBranchPostfix {
 		fullImage += fmt.Sprintf("/%s", normalisedBranch)
@@ -106,6 +118,7 @@ func deploy(cmd *cobra.Command, args []string) {
 		Environment:      env,
 		StackConfig:      stack,
 		Slack:            slack,
+		UseHarbor:        useHarbor,
 	}
 
 	cobra.CheckErr(printer.PrintYaml(params))

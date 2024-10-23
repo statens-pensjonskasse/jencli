@@ -74,3 +74,13 @@ jencli deploy \
   --stack taus3 \
   --slack medlemsdata-cd
 ```
+
+Eksempel på bruk av harbor
+```shell
+jencli deploy \
+  --swarm test \
+  --env kpt \
+  --stack kpt  \
+  --use-branch-tag \
+  --use-harbor
+```

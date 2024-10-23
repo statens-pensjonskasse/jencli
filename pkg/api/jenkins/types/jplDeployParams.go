@@ -13,6 +13,7 @@ type JPLDeploy struct {
 	Environment      string `yaml:"environment"`
 	StackConfig      string `yaml:"stackConfig"`
 	Slack            string `yaml:"slack"`
+	UseHarbor        bool   `yaml:"useHarbor"`
 }
 
 func (p JPLDeploy) ToParamMap() map[string]string {
@@ -25,6 +26,7 @@ func (p JPLDeploy) ToParamMap() map[string]string {
 		"environment":   p.Environment,
 		"stackConfig":   p.StackConfig,
 		"slack":         p.Slack,
+		"useHarbor":     strconv.FormatBool(p.UseHarbor),
 	}
 
 }

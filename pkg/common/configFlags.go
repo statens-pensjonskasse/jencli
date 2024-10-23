@@ -17,4 +17,5 @@ const (
 	EnvFlag                 = "env"
 	StackFlag               = "stack"
 	DryRunFlag              = "dry-run"
+	UseHarborFlag           = "use-harbor"
 )
