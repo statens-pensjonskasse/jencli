@@ -92,12 +92,11 @@ func deploy(cmd *cobra.Command, args []string) {
 	}
 
 	fullImage := ""
+	cwd, _ := os.Getwd()
+	project, err := common.GetProject(cwd)
 	if useHarbor {
-		cwd, _ := os.Getwd()
-		project, err := common.GetProject(cwd)
 		cobra.CheckErr(err)
 		fullImage += "cr.spk.no/" + project + "/"
-
 	} else {
 		fullImage += "old-dockerhub.spk.no:5000/"
 	}
@@ -119,6 +118,7 @@ func deploy(cmd *cobra.Command, args []string) {
 		StackConfig:      stack,
 		Slack:            slack,
 		UseHarbor:        useHarbor,
+		Project:          project,
 	}
 
 	cobra.CheckErr(printer.PrintYaml(params))
