@@ -1,4 +1,4 @@
-GO_IMAGE=old-dockerhub.spk.no:5000/base-golang/golang
+GO_IMAGE=cr.spk.no/base/go
 
 .PHONY: help
 help:
