@@ -1,5 +1,0 @@
-#!groovy
-@Library('jenkins-pipeline-library@latest_develop')
-import no.spk.jenkins.pipeline.cd.config.CDPipelineConfig
-
-deployPipeline {}
